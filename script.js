@@ -17,17 +17,18 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return R * c; // Afstand
 }
 
-function findNearestParkings(userLat, userLon, parkings) {
+function findNearestParkings(lat, lon, parkings) {
     parkings.forEach(parking => {
         const parkingLat = parking.geo_point_2d.lat;
         const parkingLon = parking.geo_point_2d.lon;
-        const distance = calculateDistance(userLat, userLon, parkingLat, parkingLon);
+        const distance = calculateDistance(lat, lon, parkingLat, parkingLon);
         parking.distance = distance;
     });
 
     parkings.sort((a, b) => a.distance - b.distance);
-    return parkings.slice(0, 5); // We geven de 5 dichtstbijzijnde parkeerplaatsen terug
+    return parkings.slice(0, 5); // Возвращаем 5 ближайших парковок
 }
+
 
 // ...
 
@@ -105,3 +106,42 @@ document.getElementById('backButton').addEventListener('click', function() {
     this.style.display = 'none'; // Verberg de terugknop
     document.getElementById('parkingList').innerHTML = ''; // De lijst met resultaten wissen
 });
+// Functie voor het geocoderen van een adres
+function geocodeAddress(address) {
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+
+    return fetch(nominatimUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                return { lat: data[0].lat, lon: data[0].lon };
+            } else {
+                throw new Error('Geen resultaten gevonden voor dit adres');
+            }
+        });
+}
+
+// Gebeurtenishandler voor de zoekknop op adres
+document.getElementById('findParkingByAddress').addEventListener('click', function() {
+    const address = document.getElementById('addressInput').value;
+    if (address) {
+        geocodeAddress(address)
+            .then(coords => {
+                fetch('https://data.stad.gent/api/v2/catalog/datasets/locaties-openbare-parkings-gent/exports/json')
+                .then(response => response.json())
+                .then(parkings => {
+                    const nearestParkings = findNearestParkings(coords.lat, coords.lon, parkings);
+                    displayParkings(nearestParkings);
+                })
+                .catch(error => {
+                    console.error('Fout bij het aanvragen van de API:', error);
+                });
+            })
+            .catch(error => {
+                alert('Fout bij het geocoding: ' + error.message);
+            });
+    } else {
+        alert('Voer een geldig adres in.');
+    }
+});
+
