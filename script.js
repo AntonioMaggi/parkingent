@@ -8,7 +8,7 @@ async function calculateRouteDistanceGraphHopper(lat1, lon1, lat2, lon2) {
     if (data.paths && data.paths.length > 0) {
         return data.paths[0].distance; 
     } else {
-        throw new Error('Не удалось рассчитать маршрут');
+        throw new Error('Kan route niet verwerken');
     }
 }
 
@@ -20,7 +20,7 @@ async function findNearestParkingsGraphHopper(userLat, userLon, parkings) {
             const distance = await calculateRouteDistanceGraphHopper(userLat, userLon, parkingLat, parkingLon);
             return { ...parking, distance };
         } catch (error) {
-            console.error('Ошибка при расчете расстояния:', error);
+            console.error('Fout bij het berekenen van de afstand:', error);
             return { ...parking, distance: null };
         }
     }));
@@ -43,7 +43,7 @@ function displayParkings(parkings, userLat, userLon) {
         displayedParkings.add(uniqueId);
 
         const div = document.createElement('div');
-        div.className = 'parking-item'; // 
+        div.className = 'parking-item'; 
         const websiteButton = parking.url ? `<a href="${parking.url}" target="_blank" class="btn btn-secondary">Website</a>` : '';
         
         div.innerHTML = `
@@ -64,7 +64,7 @@ function openRouteInMaps(userLat, userLon, parkingLat, parkingLon) {
     // Ervoor zorgen dat alle parameters getallen zijn
     if (typeof userLat !== "number" || typeof userLon !== "number" ||
         typeof parkingLat !== "number" || typeof parkingLon !== "number") {
-        console.error("Неверные координаты для прокладывания маршрута.");
+        console.error("Onjuiste coördinaten voor routeplanning.");
         return;
     }
 
