@@ -1,5 +1,23 @@
-const GH_API_KEY = '6a6dbedd-0046-44fb-8dd3-f6bc14b8f9e4'; // Замените на ваш реальный ключ API
+// Ключи API и URL для новой базы данных
+const NEW_API_URL = 'https://data.stad.gent/api/explore/v2.1/catalog/datasets/bezetting-parkeergarages-real-time/records?limit=20';
+const NEW_API_KEY = '8fd8371c9a31ea6f7edd9be7ed03f1a17a823abd0f3522615b00ceff';
 
+// Ключ API для GraphHopper
+const GH_API_KEY = '6a6dbedd-0046-44fb-8dd3-f6bc14b8f9e4';
+async function getParkingData() {
+    const response = await fetch(NEW_API_URL, {
+        headers: { 'Authorization': `Bearer ${NEW_API_KEY}` } // Добавьте этот заголовок
+    });
+    const data = await response.json();
+    return data.map(parking => ({
+        naam: parking.name,
+        straatnaam: parking.description, // Используйте здесь подходящее поле
+        capaciteit: parking.totalcapacity,
+        geo_point_2d: { lat: parking.latitude, lon: parking.longitude }, // Скорректируйте эти поля
+        url: parking.urllinkaddress
+        // Добавьте другие поля по мере необходимости
+    }));
+}
 async function calculateRouteDistanceGraphHopper(lat1, lon1, lat2, lon2) {
     const ghUrl = `https://graphhopper.com/api/1/route?point=${lat1},${lon1}&point=${lat2},${lon2}&vehicle=car&key=${GH_API_KEY}`;
     const response = await fetch(ghUrl);
@@ -11,7 +29,6 @@ async function calculateRouteDistanceGraphHopper(lat1, lon1, lat2, lon2) {
         throw new Error('Не удалось рассчитать маршрут');
     }
 }
-
 async function findNearestParkingsGraphHopper(userLat, userLon, parkings) {
     const parkingDistances = await Promise.all(parkings.map(async (parking) => {
         const parkingLat = parking.geo_point_2d.lat;
@@ -28,7 +45,6 @@ async function findNearestParkingsGraphHopper(userLat, userLon, parkings) {
     parkingDistances.sort((a, b) => a.distance - b.distance);
     return parkingDistances.filter(parking => parking.distance !== null).slice(0, 5);
 }
-
 function displayParkings(parkings, userLat, userLon) {
     const parkingList = document.getElementById('parkingList');
     parkingList.innerHTML = ''; // Очистка списка парковок
@@ -58,82 +74,66 @@ function displayParkings(parkings, userLat, userLon) {
         parkingList.appendChild(div);
     });
 }
-
-
 function openRouteInMaps(userLat, userLon, parkingLat, parkingLon) {
-    // Убедитесь, что все параметры являются числами
     if (typeof userLat !== "number" || typeof userLon !== "number" ||
         typeof parkingLat !== "number" || typeof parkingLon !== "number") {
         console.error("Неверные координаты для прокладывания маршрута.");
         return;
     }
-
-    // Создаем URL-адрес с использованием этих параметров
     const origin = encodeURIComponent(`${userLat},${userLon}`);
     const destination = encodeURIComponent(`${parkingLat},${parkingLon}`);
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
     window.open(url, '_blank');
 }
-
-
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        alert('Coördinaten gekopieerd naar klembord');
+        alert('Координаты скопированы в буфер обмена');
     }).catch(err => {
-        console.error('Fout tijdens het kopiëren: ', err);
+        console.error('Ошибка при копировании: ', err);
     });
 }
-
 document.getElementById('findParking').addEventListener('click', function() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async function(position) {
             const userLat = position.coords.latitude;
             const userLon = position.coords.longitude;
             try {
-                const response = await fetch('https://data.stad.gent/api/v2/catalog/datasets/locaties-openbare-parkings-gent/exports/json');
-                const parkings = await response.json();
+                const parkings = await getParkingData();
                 const nearestParkings = await findNearestParkingsGraphHopper(userLat, userLon, parkings);
                 displayParkings(nearestParkings, userLat, userLon);
             } catch (error) {
-                console.error('Fout bij het aanvragen van de API:', error);
+                console.error('Ошибка при запросе к API:', error);
             }
         }, function(error) {
-            console.error('Fout bij ophalen van geolocatie:', error);
+            console.error('Ошибка при получении геолокации:', error);
         });
     } else {
-        alert('Geolocatie wordt niet ondersteund door uw browser');
+        alert('Геолокация не поддерживается вашим браузером');
     }
 });
-
 document.getElementById('backButton').addEventListener('click', function() {
-    this.style.display = 'none'; // Скрыть кнопку "назад"
-    document.getElementById('parkingList').innerHTML = ''; // Очистить список парковок
-    document.getElementById('addressInput').value = ''; // Очистить ввод адреса
+    this.style.display = 'none';
+    document.getElementById('parkingList').innerHTML = '';
+    document.getElementById('addressInput').value = '';
 });
-
-// Добавим функцию для геокодирования адреса
 function geocodeAddress(address) {
     const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-
     return fetch(nominatimUrl)
         .then(response => response.json())
         .then(data => {
             if (data.length > 0) {
                 return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
             } else {
-                throw new Error('Geen resultaten gevonden voor dit adres');
+                throw new Error('Адрес не найден');
             }
         });
 }
-
-// Обработчик событий для кнопки поиска по адресу
 document.getElementById('findParkingByAddress').addEventListener('click', function() {
     const address = document.getElementById('addressInput').value;
     if (address) {
         geocodeAddress(address)
             .then(coords => {
-                fetch('https://data.stad.gent/api/v2/catalog/datasets/locaties-openbare-parkings-gent/exports/json')
-                .then(response => response.json())
+                return getParkingData()
                 .then(parkings => {
                     return findNearestParkingsGraphHopper(coords.lat, coords.lon, parkings);
                 })
@@ -141,13 +141,13 @@ document.getElementById('findParkingByAddress').addEventListener('click', functi
                     displayParkings(nearestParkings, coords.lat, coords.lon);
                 })
                 .catch(error => {
-                    console.error('Fout bij het aanvragen van de API:', error);
+                    console.error('Ошибка при запросе к API:', error);
                 });
             })
             .catch(error => {
-                alert('Fout bij het geocoding: ' + error.message);
+                alert('Ошибка геокодирования: ' + error.message);
             });
     } else {
-        alert('Voer een geldig adres in.');
+        alert('Введите корректный адрес.');
     }
 });
