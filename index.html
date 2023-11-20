@@ -2,21 +2,24 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Parkeerplaatsen Zoeken</title>
+    <title>ParGent</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="icon" type="image/png" href="Favicon.png">
     <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet2">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 </head>
 <body>
     <div class="header">
         <a href="index.html"><img src="logo.png" alt="Logo" class="logo"></a>
-        <h1>Parkeerplaatsen in Gent</h1>
+        <h2>ParGent: parkeerplaatsen in Gent</h2>
     </div>
     <div class="content">
         <button id="findParking">Zoek in mijn buurt</button>
         <input type="text" id="addressInput" placeholder="Voer een adres in" class="address-input">
         <button id="findParkingByAddress">Zoek op adres</button>
         <button id="backButton" style="display: none;">Terug</button>
+        <div id="loadingSpinner" style="display: none;"></div>
         <div id="parkingList"></div>
     </div>
     

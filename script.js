@@ -30,35 +30,71 @@ async function findNearestParkingsGraphHopper(userLat, userLon, parkings) {
 }
 
 function displayParkings(parkings, userLat, userLon) {
+    document.getElementById('loadingSpinner').style.display = 'none';
     const parkingList = document.getElementById('parkingList');
-    parkingList.innerHTML = ''; //Lijst met parkeerplaatsen wissen
-    document.getElementById('backButton').style.display = 'inline-block'; //Knop "terug" weergeven
-
-    let displayedParkings = new Set(); //Voor het volgen van unieke parkeerplaatsen
+    parkingList.innerHTML = ''; // Opschonen van de parkeerlijst
+    document.getElementById('backButton').style.display = 'inline-block'; // Toon de 'Terug'-knop
 
     parkings.forEach(parking => {
-        // Controleren of de parkeerplaats al is weergegeven
-        const uniqueId = parking.naam + parking.straatnaam;
-        if (displayedParkings.has(uniqueId)) return;
-        displayedParkings.add(uniqueId);
-
+        // Het aanmaken van een parkeerelement
         const div = document.createElement('div');
-        div.className = 'parking-item'; 
+        div.className = 'parking-item';
         const websiteButton = parking.url ? `<a href="${parking.url}" target="_blank" class="btn btn-secondary">Website</a>` : '';
-        
+
+        // Het aanmaken van een parkeerelement
         div.innerHTML = `
             <h2>${parking.naam}</h2>
             <p>Adres: ${parking.straatnaam} ${parking.huisnr || ''}</p>
             <p>Capaciteit: ${parking.capaciteit || 'Niet beschikbaar'}</p>
             <p>Afstand: ${(parking.distance / 1000).toFixed(2)} km</p>
-            <div>${websiteButton}</div>
+            
             <button onclick="copyToClipboard('${parking.geo_point_2d.lat}, ${parking.geo_point_2d.lon}')" class="btn btn-primary">Coördinaten kopiëren</button>
-            <button onclick="openRouteInMaps(${userLat}, ${userLon}, ${parking.geo_point_2d.lat}, ${parking.geo_point_2d.lon})" class="btn btn-primary">Open in Google Maps</button>
         `;
+
+         // Het creëren en toevoegen van de knop 'Openen in Google Maps
+         const openMapButton = document.createElement('button');
+         openMapButton.textContent = 'Open in Google Maps';
+         openMapButton.classList.add('btn', 'btn-secondary');
+         openMapButton.onclick = () => openInMaps(parking.geo_point_2d.lat, parking.geo_point_2d.lon);
+         div.appendChild(openMapButton);
+         
+        // Het creëren en toevoegen van de knop 'Route plannen
+        const routeButton = document.createElement('button');
+        routeButton.textContent = 'Route plannen';
+        routeButton.classList.add('btn', 'btn-primary');
+        routeButton.onclick = () => openRouteInMaps(userLat, userLon, parking.geo_point_2d.lat, parking.geo_point_2d.lon);
+        div.appendChild(routeButton);
+
+        // Het creëren en toevoegen van de knop 'Route plannen
+        const qrCodeElement = document.createElement('div');
+        qrCodeElement.classList.add('qr-code-container');
+        div.appendChild(qrCodeElement);
+
+        // Genereren en toevoegen van een QR-code in de container
+        new QRCode(qrCodeElement, {
+            text: `https://www.google.com/maps?q=${parking.geo_point_2d.lat},${parking.geo_point_2d.lon}`,
+            width: 128,
+            height: 128,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Het toevoegen van de gehele blok aan de lijst op de pagina
         parkingList.appendChild(div);
     });
 }
 
+function openInMaps(parkingLat, parkingLon) {
+    if (typeof parkingLat !== "number" || typeof parkingLon !== "number") {
+        console.error("Ongeldige coördinaten voor het weergeven van de kaart.");
+        return;
+    }
+
+    const location = encodeURIComponent(`${parkingLat},${parkingLon}`);
+    const url = `https://www.google.com/maps?q=${location}`;
+    window.open(url, '_blank');
+}
 
 function openRouteInMaps(userLat, userLon, parkingLat, parkingLon) {
     // Ervoor zorgen dat alle parameters getallen zijn
@@ -75,7 +111,6 @@ function openRouteInMaps(userLat, userLon, parkingLat, parkingLon) {
     window.open(url, '_blank');
 }
 
-
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         alert('Coördinaten gekopieerd naar klembord');
@@ -85,6 +120,7 @@ function copyToClipboard(text) {
 }
 
 document.getElementById('findParking').addEventListener('click', function() {
+    document.getElementById('loadingSpinner').style.display = 'block';
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async function(position) {
             const userLat = position.coords.latitude;
@@ -128,6 +164,7 @@ function geocodeAddress(address) {
 
 // Eventhandler voor de knop voor adreszoeken
 document.getElementById('findParkingByAddress').addEventListener('click', function() {
+    document.getElementById('loadingSpinner').style.display = 'block';
     const address = document.getElementById('addressInput').value;
     if (address) {
         geocodeAddress(address)
