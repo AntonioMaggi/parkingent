@@ -32,16 +32,16 @@ async function findNearestParkingsGraphHopper(userLat, userLon, parkings) {
 function displayParkings(parkings, userLat, userLon) {
     document.getElementById('loadingSpinner').style.display = 'none';
     const parkingList = document.getElementById('parkingList');
-    parkingList.innerHTML = ''; // Opschonen van de parkeerlijst
-    document.getElementById('backButton').style.display = 'inline-block'; // Toon de 'Terug'-knop
+    parkingList.innerHTML = ''; 
+    document.getElementById('backButton').style.display = 'inline-block'; // Show the 'Terug' button
 
     parkings.forEach(parking => {
-        // Het aanmaken van een parkeerelement
+        // Create a parking element
         const div = document.createElement('div');
         div.className = 'parking-item';
         const websiteButton = parking.url ? `<a href="${parking.url}" target="_blank" class="btn btn-secondary">Website</a>` : '';
 
-        // Het aanmaken van een parkeerelement
+        // Create a parking element
         div.innerHTML = `
             <h2>${parking.naam}</h2>
             <p>Adres: ${parking.straatnaam} ${parking.huisnr || ''}</p>
@@ -51,26 +51,26 @@ function displayParkings(parkings, userLat, userLon) {
             <button onclick="copyToClipboard('${parking.geo_point_2d.lat}, ${parking.geo_point_2d.lon}')" class="btn btn-primary">Coördinaten kopiëren</button>
         `;
 
-         // Het creëren en toevoegen van de knop 'Openen in Google Maps
+         // Create and show button "Open in Google Maps"
          const openMapButton = document.createElement('button');
          openMapButton.textContent = 'Open in Google Maps';
          openMapButton.classList.add('btn', 'btn-secondary');
          openMapButton.onclick = () => openInMaps(parking.geo_point_2d.lat, parking.geo_point_2d.lon);
          div.appendChild(openMapButton);
          
-        // Het creëren en toevoegen van de knop 'Route plannen
+        // Create and show button "Route Plannen"
         const routeButton = document.createElement('button');
         routeButton.textContent = 'Route plannen';
         routeButton.classList.add('btn', 'btn-primary');
         routeButton.onclick = () => openRouteInMaps(userLat, userLon, parking.geo_point_2d.lat, parking.geo_point_2d.lon);
         div.appendChild(routeButton);
 
-        // Het creëren en toevoegen van de knop 'Route plannen
+        
         const qrCodeElement = document.createElement('div');
         qrCodeElement.classList.add('qr-code-container');
         div.appendChild(qrCodeElement);
 
-        // Genereren en toevoegen van een QR-code in de container
+        // Generate and show QR-code
         new QRCode(qrCodeElement, {
             text: `https://www.google.com/maps?q=${parking.geo_point_2d.lat},${parking.geo_point_2d.lon}`,
             width: 128,
@@ -80,7 +80,7 @@ function displayParkings(parkings, userLat, userLon) {
             correctLevel: QRCode.CorrectLevel.H
         });
 
-        // Het toevoegen van de gehele blok aan de lijst op de pagina
+        // Add the block to the list
         parkingList.appendChild(div);
     });
 }
@@ -97,14 +97,14 @@ function openInMaps(parkingLat, parkingLon) {
 }
 
 function openRouteInMaps(userLat, userLon, parkingLat, parkingLon) {
-    // Ervoor zorgen dat alle parameters getallen zijn
+    // Ensure all parameters are included
     if (typeof userLat !== "number" || typeof userLon !== "number" ||
         typeof parkingLat !== "number" || typeof parkingLon !== "number") {
         console.error("Onjuiste coördinaten voor routeplanning.");
         return;
     }
 
-    //Een URL aanmaken met deze parameters
+    //Make a URL with the parameters
     const origin = encodeURIComponent(`${userLat},${userLon}`);
     const destination = encodeURIComponent(`${parkingLat},${parkingLon}`);
     const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`;
@@ -142,12 +142,12 @@ document.getElementById('findParking').addEventListener('click', function() {
 });
 
 document.getElementById('backButton').addEventListener('click', function() {
-    this.style.display = 'none'; // Knop "terug" verbergen
-    document.getElementById('parkingList').innerHTML = ''; //Lijst met parkeerplaatsen wissen
-    document.getElementById('addressInput').value = ''; // Adresinvoer wissen
+    this.style.display = 'none'; // Hide "terug" button
+    document.getElementById('parkingList').innerHTML = ''; //Clear parking list
+    document.getElementById('addressInput').value = ''; // Clear address search box
 });
 
-// Functie toevoegen voor het geocoderen van een adres
+// Add function for geocoding an address
 function geocodeAddress(address) {
     const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
 
@@ -162,7 +162,7 @@ function geocodeAddress(address) {
         });
 }
 
-// Eventhandler voor de knop voor adreszoeken
+// Eventhandler for the button adreszoeken
 document.getElementById('findParkingByAddress').addEventListener('click', function() {
     document.getElementById('loadingSpinner').style.display = 'block';
     const address = document.getElementById('addressInput').value;

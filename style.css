@@ -1,6 +1,6 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #004d60; /* Aanpassen aan uw primaire achtergrondkleur */
+    background-color: #004d60; 
     color: #ffffff;
     margin: 0;
     padding: 0;
@@ -15,7 +15,7 @@ body {
 }
 
 .logo {
-    max-width: 100px; /* Aanpassen aan de grootte van uw ontwerp */
+    max-width: 100px; 
     margin-bottom: 10px;
 }
 
@@ -24,8 +24,9 @@ body {
     padding: 20px;
 }
 
+/* Accent color */
 button {
-    background-color: #00aabb; /* Aanpassen aan uw accentkleur */
+    background-color: #00aabb; 
     color: white;
     padding: 10px 20px;
     border: none;
@@ -36,32 +37,35 @@ button {
     margin-bottom: 20px;
 }
 
+/* Dark hover effect */
 button:hover {
-    background-color: #008c99; /* Donkerder voor hovereffect */
+    background-color: #008c99; 
 }
 
+/* Darker color for list items */
 #parkingList div {
-    background-color: #003d4f; /* Donkere kleur voor lijstitems */
+    background-color: #003d4f; 
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 5px;
     text-align: center;
 }
-/* Stijlen voor de 'Meer informatie' links */
+/* Style for the 'Meer informatie' links */
 .parking-item a {
-    color: #00aabb; /* Tekstkleur van de link voor contrast met donkere achtergrond */
-    background-color: rgba(255, 255, 255, 0.2); /* Halfdoorzichtige witte achtergrond */
-    padding: 5px 10px; /* Ruimte rond de tekst */
-    border-radius: 3px; /* Afgeronde hoeken */
-    text-decoration: none; /* Geen onderstreping */
-    display: inline-block; /* Zodat padding en border-radius toegepast worden */
-    margin: 5px 0; /* Ruimte aan de boven- en onderkant */
-    transition: background-color 0.3s; /* Vloeiende overgang voor achtergrondkleur */
+    color: #00aabb;
+    background-color: rgba(255, 255, 255, 0.2); 
+    padding: 5px 10px; 
+    border-radius: 3px; 
+    text-decoration: none; 
+    display: inline-block; 
+    margin: 5px 0; 
+    transition: background-color 0.3s; 
 }
 
+/* An eyecatching background for hover */
 .parking-item a:hover {
-    background-color: rgba(255, 255, 255, 0.5); /* Meer opvallende achtergrond bij hover */
-    color: #004d60; /* Tekstkleur bij hover */
+    background-color: rgba(255, 255, 255, 0.5); 
+    color: #004d60; 
 }
 
 .footer {
@@ -81,7 +85,7 @@ button:hover {
     border-radius: 5px;
     border: none;
     margin-bottom: 10px;
-    width: calc(15% - 40px); /* Verklein de breedte om rekening te houden met opvulling */
+    width: calc(15% - 40px); /* Reduce width to account for padding */
 }
 
 .address-input:focus {
@@ -114,5 +118,3 @@ button:hover {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-/*the end*/
