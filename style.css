@@ -8,7 +8,8 @@ body {
 }
 
 .header {
-    background-color: #00677f; /* Aanpassen aan de kleur van uw headerachtergrond */
+    background: rgb(4,107,132);
+    background: linear-gradient(180deg, rgba(4,107,132,1) 81%, rgba(0,77,96,1) 100%); 
     padding: 10px;
     text-align: center;
 }
