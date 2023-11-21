@@ -1,46 +1,107 @@
-Algoritme en werkfasen van JavaScript:
 
-1. Graden naar radialen omzetten (toRadians)
+1. **Calculate Route Distance (calculateRouteDistanceGraphHopper)**
 
-Deze functie zet hoekwaarden om van graden naar radialen, wat noodzakelijk is voor berekeningen in wiskundige formules.
+   This function uses the GraphHopper API to calculate the route distance between two points, which is necessary for determining the distance via roadways.
 
-2. Afstand berekenen (calculateDistance)
+2. **Find Nearest Parkings (findNearestParkingsGraphHopper)**
 
-Deze functie wordt gebruikt om de afstand tussen twee punten op het aardoppervlak te berekenen, gegeven hun breedte- en lengtegraden. Het gebruikt de haversine-formule om de afstand tussen de punten te berekenen.
+   This function takes the latitude and longitude of the user and a list of parking places, invokes `calculateRouteDistanceGraphHopper` for each parking, adds the calculated distance to the parking object, sorts the list by distance, and returns the nearest parking places.
 
-3. Dichtstbijzijnde parkeerplaatsen vinden (findNearestParkings)
+3. **Display Parkings (displayParkings)**
 
-Deze functie neemt de breedte- en lengtegraad van de gebruiker en een array van parkeerplaatsobjecten. Het berekent de afstand van de gebruiker tot elke parkeerplaats, voegt deze afstand toe aan het parkeerplaatsobject, en sorteert vervolgens de array van parkeerplaatsen op afstand en geeft de eerste vijf terug.
+   This function displays information about parking places on the webpage. It creates new DOM elements with parking data, a button to copy coordinates, a link to the website (if available), a button to plan the route in Google Maps, and a QR code for easy navigation.
 
-4. Parkeerplaatsen weergeven (displayParkings)
+4. **Copy Coordinates to Clipboard (copyToClipboard)**
 
-Deze functie is verantwoordelijk voor het weergeven van informatie over de parkeerplaatsen op de webpagina. Het maakt de huidige lijst van parkeerplaatsen leeg, creëert nieuwe DOM-elementen voor elke parkeerplaats en voegt ze toe aan de lijst op de pagina.
+   This function copies the coordinates of a parking place to the user's clipboard.
 
-5. Coördinaten naar klembord kopiëren (copyToClipboard)
+5. **Open Coordinates in Google Maps (openInMaps)**
 
-Deze functie stelt de gebruiker in staat de coördinaten van een parkeerplaats naar het klembord van de gebruiker te kopiëren.
+   This function opens the given coordinates in Google Maps in a new browser tab.
 
-6. Coördinaten openen in Google Maps (openInGoogleMaps)
+6. **Plan Route in Google Maps (openRouteInMaps)**
 
-Deze functie opent de gegeven coördinaten in Google Maps in een nieuw browsertabblad.
+   This function opens Google Maps and plans a route from the user's current location to the chosen parking place.
 
-7. Event Handling
+7. **Event Handling**
 
-    Parkeerplaatsen zoeken (findParking): Wanneer de gebruiker op de knop "Zoeken" klikt, wordt deze functie geactiveerd. Het gebruikt de geolocatie van de browser om de huidige locatie van de gebruiker te bepalen, vervolgens maakt het een aanvraag naar de API om een lijst van parkeerplaatsen te verkrijgen, verwerkt ze met findNearestParkings en toont de resultaten met displayParkings.
-    Terugknop (backButton): Deze knop maakt de lijst van parkeerplaatsen leeg en verbergt de knop zelf.
+   - **Search for Parkings (findParking and findParkingByAddress)**: When the user clicks on the "Zoek in mijn buurt" (Search in my neighborhood) or "Zoek op adres" (Search by address) button, the user's location is determined or the entered address is geocoded, after which the list of parking places is retrieved, processed, and displayed.
+   - **Back Button (backButton)**: This button clears the list of parking places and hides the back button.
+
+8. **Loading Indicator (loadingSpinner)**
+
+   A simple spinner animation that is displayed while the parking places are loading to inform the user that loading is in progress.
+
+**Operational Steps:**
+
+   - **Initialization**: Upon page load, event handlers are attached to relevant elements.
+   - **User Interaction**: The user initiates a search action.
+   - **Location Determination**: Geolocation or geocoding is used to determine the location.
+   - **API Request**: A request is sent to the API to retrieve a list of parking places.
+   - **Data Processing**: The obtained data is processed (calculate distance, sorting).
+   - **Display Results**: The results are displayed on the webpage with relevant actions for the user.
+   - **Loading Indicator**: A loading animation is displayed while waiting for the API response.
+
+    ----------------------------------------------------------------------------------------------------------------------------------
+    
+1.Afstand berekenen (calculateRouteDistanceGraphHopper)
+
+    Deze functie gebruikt de GraphHopper API om de routeafstand tussen twee punten te berekenen, wat nodig is voor het bepalen van de afstand over de weg.
+
+2.Dichtstbijzijnde parkeerplaatsen vinden (findNearestParkingsGraphHopper)
+
+    Deze functie neemt de breedte- en lengtegraad van de gebruiker en een lijst met parkeerplaatsen, roept calculateRouteDistanceGraphHopper aan voor elke parkeerplaats, voegt de berekende afstand toe aan het parkeerplaatsobject, sorteert de lijst op afstand en retourneert de dichtstbijzijnde parkeerplaatsen.
+
+3.Parkeerplaatsen weergeven (displayParkings)
+
+    Deze functie toont informatie over parkeerplaatsen op de webpagina. Het creëert nieuwe DOM-elementen met parkeerplaatsgegevens, een knop voor het kopiëren van coördinaten, een link naar de website (indien aanwezig), een knop om de route in Google Maps te plannen en een QR-code voor eenvoudige navigatie.
+
+4.Coördinaten naar klembord kopiëren (copyToClipboard)
+
+    Deze functie kopieert de coördinaten van een parkeerplaats naar het klembord van de gebruiker.
+
+5.Coördinaten openen in Google Maps (openInMaps)
+
+    Deze functie opent de gegeven coördinaten in Google Maps in een nieuw browsertabblad.
+
+6.Route plannen in Google Maps (openRouteInMaps)
+
+    Deze functie opent Google Maps en plant een route van de huidige locatie van de gebruiker naar de gekozen parkeerplaats.
+
+7.Event Handling
+    Parkeerplaatsen zoeken (findParking en findParkingByAddress): Wanneer de gebruiker op de knop "Zoek in mijn buurt" of "Zoek op adres" klikt, wordt de locatie van de gebruiker bepaald of het ingevoerde adres geocoderd, waarna de lijst met parkeerplaatsen wordt opgehaald, verwerkt en getoond.
+    Terugknop (backButton): Deze knop leegt de lijst met parkeerplaatsen en verbergt de terugknop.
+
+8.Laden Indicator (loadingSpinner)
+
+    Een simpele spinner animatie die wordt getoond tijdens het laden van de parkeerplaatsen om de gebruiker te informeren dat het laden gaande is.
 
 Werkingsstappen:
 
-    Initialisatie: Bij het laden van de pagina worden event handlers gekoppeld aan de relevante elementen.
+    Initialisatie: 
     
-    Gebruikersinteractie: De gebruiker klikt op de knop "Parkeerplaatsen zoeken".
+    Bij het laden van de pagina worden event handlers gekoppeld aan de relevante elementen.
     
-    Locatiebepaling: Geolocatie wordt gebruikt om de huidige locatie van de gebruiker te bepalen.
+    Gebruikersinteractie: 
+
+    De gebruiker initieert een zoekactie.
+
+    Locatiebepaling: 
     
-    API-verzoek: Een verzoek wordt naar de API gestuurd om een lijst van parkeerplaatsen te verkrijgen.
+    Geolocatie of geocodering wordt gebruikt om de locatie te bepalen.
     
-    Data verwerking: De verkregen gegevens worden verwerkt (afstand berekenen, sorteren).
+    API-verzoek: 
     
-    Resultaten weergeven: De resultaten worden weergegeven op de webpagina.
+    Een verzoek wordt naar de API gestuurd om een lijst met parkeerplaatsen te verkrijgen.
     
-    Extra acties: De gebruiker kan interactie hebben met de resultaten (coördinaten kopiëren, bekijken in Google Maps).
+    Data verwerking: 
+    
+    De verkregen data wordt verwerkt (afstand berekenen, sorteren).
+    
+    Resultaten weergeven: 
+    
+    De resultaten worden op de webpagina getoond met relevante acties voor de gebruiker.
+    
+    Laden Indicator: 
+    
+    Een laadanimatie wordt getoond tijdens het wachten op de API-response.
