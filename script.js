@@ -47,7 +47,7 @@ function displayParkings(parkings, userLat, userLon) {
             <p>Adres: ${parking.straatnaam} ${parking.huisnr || ''}</p>
             <p>Capaciteit: ${parking.capaciteit || 'Niet beschikbaar'}</p>
             <p>Afstand: ${(parking.distance / 1000).toFixed(2)} km</p>
-            
+            <div>${websiteButton}</div>
             <button onclick="copyToClipboard('${parking.geo_point_2d.lat}, ${parking.geo_point_2d.lon}')" class="btn btn-primary">Coördinaten kopiëren</button>
         `;
 
