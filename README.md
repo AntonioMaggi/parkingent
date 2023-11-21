@@ -32,8 +32,5 @@ Interested in contributing to ParGent? Great! We welcome pull requests and sugge
 
 (If applicable, specify the license under which the project is released.)
 
-## Contact
-
-For more information and support, please contact us at [contact@parkingent.com](mailto:contact@parkingent.com).
 
 Thank you for your interest in ParGent, together we make parking in Ghent easier!
